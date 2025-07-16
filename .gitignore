@@ -208,6 +208,7 @@ __marimo__/
 # npm related ignores
 
 # dependencies
+.next/
 node_modules/
 /.pnp
 .pnp.*
