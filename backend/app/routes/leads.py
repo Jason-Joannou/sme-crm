@@ -12,7 +12,7 @@ router = APIRouter(
 
 
 @router.post("/create_lead")
-async def create_lead(request: Request, lead: NewLead):
+async def create_lead(lead: NewLead):
     try:
         db = DBManager().get_db()
         lead_id = create_firebase_collection(db=db, collection_name="leads", collection_id=lead.id, collection_obj=lead)
