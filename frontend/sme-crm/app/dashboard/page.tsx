@@ -43,6 +43,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import LeadDetailModal from '@/components/modals/lead-detail-modal';
 import AddLeadModal from '@/components/modals/add-lead-modal';
+import GoogleMaps from '@/components/google-maps';
 
 interface Lead {
   id: number;
@@ -57,6 +58,21 @@ interface Lead {
   notes: string;
   website?: string;
   contactPerson?: string;
+}
+
+interface BusinessMarker {
+  id: string;
+  position: {
+    lat: number;
+    lng: number;
+  };
+  name: string;
+  category: string;
+  address: string;
+  phone?: string;
+  email?: string;
+  rating?: number;
+  website?: string;
 }
 
 const Dashboard = () => {
@@ -145,6 +161,23 @@ const Dashboard = () => {
     setLeads([...leads, newLead]);
     setIsAddLeadOpen(false);
   };
+
+  const handleAddLeadFromMap = (business: BusinessMarker) => {
+    const newLead: Lead = {
+      id: Math.max(...leads.map(l => l.id)) + 1,
+      name: business.name,
+      category: business.category,
+      address: business.address,
+      phone: business.phone || '',
+      email: business.email || '',
+      status: 'New',
+      rating: business.rating || 0,
+      lastContact: new Date().toISOString().split('T')[0],
+      notes: 'Added from map search',
+      website: business.website
+    };
+    setLeads([...leads, newLead]);
+  }
 
   const handleDeleteLead = (leadId: number) => {
     setLeads(leads.filter(lead => lead.id !== leadId));
@@ -396,14 +429,19 @@ const Dashboard = () => {
                 <div className="lg:col-span-2 space-y-4">
                   {/* Map Placeholder */}
                   <Card>
+                    <CardHeader>
+                      <CardTitle>Map Search Results</CardTitle>
+                      <CardDescription>
+                        Click on markers to view business details and add as leads
+                      </CardDescription>
+                    </CardHeader>
                     <CardContent className="p-0">
-                      <div className="bg-gradient-to-r from-blue-100 to-indigo-100 h-96 rounded-lg flex items-center justify-center">
-                        <div className="text-center">
-                          <MapPin className="h-16 w-16 text-blue-600 mx-auto mb-4" />
-                          <p className="text-gray-600 text-lg">Interactive Google Maps</p>
-                          <p className="text-gray-500 text-sm mt-2">Search results will appear here</p>
-                        </div>
-                      </div>
+                      <GoogleMaps
+                        searchLocation={selectedLocation}
+                        searchCategory={selectedCategory}
+                        searchKeywords={searchQuery}
+                        onAddLead={handleAddLeadFromMap}
+                      />
                     </CardContent>
                   </Card>
 
